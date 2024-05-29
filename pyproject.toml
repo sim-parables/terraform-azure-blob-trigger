@@ -1,0 +1,6 @@
+[tool.pytest.ini_options]
+markers = [
+    "github: Github Action Workflow Test Marker",
+    "credentials: Authentication with Azure Service Principal Client Credentials Test Marker",
+    "oidc: Authentication with Azure OpenID Connect Test Marker",
+]

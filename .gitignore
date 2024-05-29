@@ -1,0 +1,8 @@
+test/service_account/.terraform/*
+test/service_account/.terraform.lock.hcl
+test/dataflow/.terraform/*
+test/dataflow/.terraform.lock.hcl
+test/dataflow/source/*.zip
+test/dataflow/source/.python_packages
+test/dataflow/unit_test/__pycache__/*
+\.pytest_cache
