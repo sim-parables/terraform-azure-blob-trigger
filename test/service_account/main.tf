@@ -126,9 +126,9 @@ module "azure_service_account" {
 ## - `subject`: OIDC authentication subject.
 ##---------------------------------------------------------------------------------------------------------------------
 module "azure_application_federated_identity_credential" {
-  source   = "github.com/sim-parables/terraform-azure-service-account.git?ref=31aeee7713bb59fffb1d5096faf705d03e28c232//modules/identity_federation"
-  depends_on = [ module.azure_service_account ]
-  for_each = tomap({ for t in local.oidc_subject : "${t.display_name}-${t.subject}" => t })
+  source     = "github.com/sim-parables/terraform-azure-service-account.git?ref=31aeee7713bb59fffb1d5096faf705d03e28c232//modules/identity_federation"
+  depends_on = [module.azure_service_account]
+  for_each   = tomap({ for t in local.oidc_subject : "${t.display_name}-${t.subject}" => t })
 
   application_id = module.azure_service_account.application_id
   display_name   = each.value.display_name
