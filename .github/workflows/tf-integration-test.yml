@@ -130,7 +130,6 @@ jobs:
       working_directory: ./test/dataflow
   
   terraform-integration-test:
-    if: ${{ github.event.act || github.event.inputs.terraform_operation == 'test' }}
     needs: [ reusable-env-vars, terraform-integration-auth, terraform-integration-auth-decode, terraform-integration-apply ]
     uses: ./.github/workflows/reusable-test.yml
     secrets:
