@@ -89,6 +89,7 @@ jobs:
     with:
       ACT_MODE: ${{ !!github.event.act }}
       working_directory: ./test/service_account
+      targets: module.azure_service_account,module.azure_application_federated_identity_credential
   
   terraform-dispatch-auth-decode:
     needs: [ terraform-dispatch-auth ]

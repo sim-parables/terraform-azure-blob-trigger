@@ -49,11 +49,11 @@ data "azuread_service_principal" "msgraph" {
 locals {
   oidc_subject = [
     {
-      display_name = "example-federated-idp-readwrite"
+      display_name = "example-federated-idp-dataflow-readwrite"
       subject      = "repo:${var.GITHUB_REPOSITORY}:environment:${var.GITHUB_ENV}"
     },
     {
-      display_name = "example-federated-idp-read"
+      display_name = "example-federated-idp-dataflow-read"
       subject      = "repo:${var.GITHUB_REPOSITORY}:ref:${var.GITHUB_REF}"
     }
   ]
@@ -127,6 +127,7 @@ module "azure_service_account" {
 ##---------------------------------------------------------------------------------------------------------------------
 module "azure_application_federated_identity_credential" {
   source   = "github.com/sim-parables/terraform-azure-service-account.git?ref=31aeee7713bb59fffb1d5096faf705d03e28c232//modules/identity_federation"
+  depends_on = [ module.azure_service_account ]
   for_each = tomap({ for t in local.oidc_subject : "${t.display_name}-${t.subject}" => t })
 
   application_id = module.azure_service_account.application_id
