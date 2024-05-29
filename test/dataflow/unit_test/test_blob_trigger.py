@@ -43,14 +43,14 @@ assert not INPUT_BUCKET is None
 assert not OUTPUT_BUCKET is None
 
 def request_oidc_token():
-    ACTIONS_RUNTIME_TOKEN=os.getenv('ACTIONS_RUNTIME_TOKEN')
-    ACTIONS_ID_TOKEN_REQUEST_URL=os.getenv('ACTIONS_ID_TOKEN_REQUEST_URL')
-    assert not ACTIONS_RUNTIME_TOKEN is None
-    assert not ACTIONS_ID_TOKEN_REQUEST_URL is None
+    GA_OIDC_PROVIDER_TOKEN=os.getenv('GA_OIDC_PROVIDER_TOKEN')
+    GA_OIDC_PROVIDER_URL=os.getenv('GA_OIDC_PROVIDER_URL')
+    assert not GA_OIDC_PROVIDER_TOKEN is None
+    assert not GA_OIDC_PROVIDER_URL is None
 
-    response = requests.post(f'{ACTIONS_ID_TOKEN_REQUEST_URL}&audience=api://AzureADTokenExchange',
+    response = requests.post(f'{GA_OIDC_PROVIDER_URL}&audience=api://AzureADTokenExchange',
         headers = [
-            f'Authorization: bearer {ACTIONS_RUNTIME_TOKEN}',
+            f'Authorization: bearer {GA_OIDC_PROVIDER_TOKEN}',
             'Accept: application/json; api-version=2.0',
             'Content-Type: application/json'
         ],

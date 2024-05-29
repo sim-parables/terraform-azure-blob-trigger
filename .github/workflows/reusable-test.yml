@@ -79,9 +79,35 @@ jobs:
         OUTPUT_BUCKET_NAME=$(terraform output -raw results_bucket_name)
         FUNCTION_URL=$(terraform output -raw function_url)" >> $GITHUB_OUTPUT
   
+  oidc_output:
+    runs-on: ubuntu-latest
+    name: Github OIDC JWT Token Request
+    if: !input.ACT_MODE
+    
+    outputs:
+      GA_OIDC_PROVIDER_TOKEN: "${{ steps.jwt_prep.outputs.GA_OIDC_PROVIDER_TOKEN }}"
+      GA_OIDC_PROVIDER_URL: "${{ steps.jwt_prep.outputs.GA_OIDC_PROVIDER_URL }}"
+    
+    steps:
+      - uses: actions/github-script@v6
+        timeout-minutes: 10
+        with:
+          debug: true
+          script: |
+            const GA_OIDC_PROVIDER_TOKEN = process.env['ACTIONS_RUNTIME_TOKEN']
+            const GA_OIDC_PROVIDER_URL = process.env['ACTIONS_ID_TOKEN_REQUEST_URL']
+            core.setOutput('GA_OIDC_PROVIDER_TOKEN', GA_OIDC_PROVIDER_TOKEN.trim())
+            core.setOutput('GA_OIDC_PROVIDER_URL', GA_OIDC_PROVIDER_URL.trim())
+      
+      - id: jwt_prep
+        run: |
+          echo "GA_OIDC_PROVIDER_TOKEN=$GA_OIDC_PROVIDER_TOKEN
+          GA_OIDC_PROVIDER_URL=$GA_OIDC_PROVIDER_URL" >> $GITHUB_OUTPUT
+
+  
   terraform-test:
     name: Terraform Test
-    needs: [ terraform-output ]
+    needs: [ terraform-output, oidc_output ]
     runs-on: ubuntu-latest
     env:
       AZURE_CLIENT_ID: "${{ secrets.AZURE_CLIENT_ID }}"
@@ -89,6 +115,8 @@ jobs:
       AZURE_TENANT_ID: "${{ secrets.AZURE_TENANT_ID }}"
       INPUT_BUCKET_NAME: ${{ needs.terraform-output.outputs.INPUT_BUCKET_NAME }}
       OUTPUT_BUCKET_NAME: ${{ needs.terraform-output.outputs.OUTPUT_BUCKET_NAME }}
+      GA_OIDC_PROVIDER_TOKEN: "${{ needs.oidc_output.outputs.GA_OIDC_PROVIDER_TOKEN }}"
+      GA_OIDC_PROVIDER_URL: "${{ needs.oidc_output.outputs.GA_OIDC_PROVIDER_URL }}"
     
     defaults:
       run:
