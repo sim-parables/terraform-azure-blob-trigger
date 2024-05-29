@@ -49,14 +49,14 @@ def request_oidc_token():
     assert not GA_OIDC_PROVIDER_URL is None
 
     response = requests.post(f'{GA_OIDC_PROVIDER_URL}&audience=api://AzureADTokenExchange',
-        headers = [
-            f'Authorization: bearer {GA_OIDC_PROVIDER_TOKEN}',
-            'Accept: application/json; api-version=2.0',
-            'Content-Type: application/json'
-        ],
-        data='{}'
+        headers = {
+            'Authorization': f'bearer {GA_OIDC_PROVIDER_TOKEN}',
+            'Accept': 'application/json; api-version=2.0',
+            'Content-Type': 'application/json'
+        }
     )
-
+    
+    print(response.raw)
     try:
         return json.loads(base64.b64decode(response.raw))
     except Exception as exc:
