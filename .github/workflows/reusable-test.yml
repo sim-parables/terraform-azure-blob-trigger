@@ -82,7 +82,7 @@ jobs:
   oidc_output:
     runs-on: ubuntu-latest
     name: Github OIDC JWT Token Request
-    if: !input.ACT_MODE
+    if: ${{ !inputs.ACT_MODE }}
     
     outputs:
       GA_OIDC_PROVIDER_TOKEN: "${{ steps.jwt_prep.outputs.GA_OIDC_PROVIDER_TOKEN }}"
