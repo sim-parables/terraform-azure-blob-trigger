@@ -5,7 +5,7 @@ output "trigger_bucket_name" {
 
 output "trigger_bucket_key" {
   description = "ADLS Bucket Shared Access Key for Trigger Data"
-  value       = module.trigger_bucket.bucket_key
+  value       = nonsensitive(module.trigger_bucket.bucket_key)
 }
 
 output "results_bucket_name" {
@@ -15,7 +15,7 @@ output "results_bucket_name" {
 
 output "results_bucket_key" {
   description = "ADLS Bucket Shared Access Key for Results Data"
-  value       = module.results_bucket.bucket_key
+  value       = nonsensitive(module.results_bucket.bucket_key)
 }
 
 output "function_url" {
