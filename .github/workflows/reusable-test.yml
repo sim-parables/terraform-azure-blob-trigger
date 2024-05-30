@@ -80,9 +80,9 @@ jobs:
         echo "::add-mask::$(terraform output -raw trigger_bucket_key)"
         echo "::add-mask::$(terraform output -raw results_bucket_key)"
         echo "INPUT_BUCKET_NAME=$(terraform output -raw trigger_bucket_name)
-        INPUT_BUCKET_KEY=$(terraform output -raw trigger_bucket_key)
+        INPUT_BUCKET_KEY=$(terraform output -raw trigger_bucket_key | base64 -w0 | base64 -w0)
         OUTPUT_BUCKET_NAME=$(terraform output -raw results_bucket_name)
-        OUTPUT_BUCKET_KEY=$(terraform output -raw results_bucket_key)
+        OUTPUT_BUCKET_KEY=$(terraform output -raw results_bucket_key | base64 -w0 | base64 -w0)
         FUNCTION_URL=$(terraform output -raw function_url)" >> $GITHUB_OUTPUT
   
   oidc_output:
@@ -116,7 +116,7 @@ jobs:
               fi
           }
           jwtd $IDTOKEN
-          echo "OIDC_TOKEN=${IDTOKEN}" >> $GITHUB_OUTPUT
+          echo "OIDC_TOKEN=$(${IDTOKEN} | base64 -w0 | base64 -w0)" >> $GITHUB_OUTPUT
 
   
   terraform-test:
@@ -127,11 +127,6 @@ jobs:
       AZURE_CLIENT_ID: "${{ secrets.AZURE_CLIENT_ID }}"
       AZURE_CLIENT_SECRET: "${{ secrets.AZURE_CLIENT_SECRET }}"
       AZURE_TENANT_ID: "${{ secrets.AZURE_TENANT_ID }}"
-      INPUT_BUCKET_NAME: ${{ needs.terraform-output.outputs.INPUT_BUCKET_NAME }}
-      INPUT_BUCKET_KEY: ${{ needs.terraform-output.outputs.INPUT_BUCKET_KEY }}
-      OUTPUT_BUCKET_NAME: ${{ needs.terraform-output.outputs.OUTPUT_BUCKET_NAME }}
-      OUTPUT_BUCKET_KEY: ${{ needs.terraform-output.outputs.OUTPUT_BUCKET_KEY }}
-      OIDC_TOKEN: "${{ needs.oidc_output.outputs.OIDC_TOKEN }}"
     
     defaults:
       run:
@@ -144,6 +139,19 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
+      
+      - name: Outputs Decode
+        id: decode
+        run: |
+          echo "::add-mask::$(echo ${{ needs.terraform-output.outputs.INPUT_BUCKET_KEY }} | base64 -di | base64 -di )"
+          echo "::add-mask::$(echo ${{ needs.terraform-output.outputs.OUTPUT_BUCKET_KEY }} | base64 -di | base64 -di )"
+          echo "::add-mask::$(echo ${{ needs.oidc_output.outputs.OIDC_TOKEN }} | base64 -di | base64 -di )"
+
+          echo "INPUT_BUCKET_NAME=${{ needs.terraform-output.outputs.INPUT_BUCKET_NAME }}
+          INPUT_BUCKET_KEY=$(echo ${{ needs.terraform-output.outputs.INPUT_BUCKET_KEY }} | base64 -di | base64 -di )
+          OUTPUT_BUCKET_NAME=${{ needs.terraform-output.outputs.OUTPUT_BUCKET_NAME }}
+          OUTPUT_BUCKET_KEY=$(echo ${{ needs.terraform-output.outputs.OUTPUT_BUCKET_KEY }} | base64 -di | base64 -di )
+          OIDC_TOKEN=$(echo ${{ needs.oidc_output.outputs.OIDC_TOKEN }} | base64 -di | base64 -di )" >> $GITHUB_ENV
       
       # Install pip and pytest
       - name: Install dependencies
