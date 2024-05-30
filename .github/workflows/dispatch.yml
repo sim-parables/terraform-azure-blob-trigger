@@ -143,7 +143,7 @@ jobs:
     with:
       ACT_MODE: ${{ !!github.event.act }}
       working_directory: ./test/dataflow
-      markers: ${{ !!github.event.act && 'github and client_credentials' || 'github and shared_key'}}
+      markers: ${{ !!github.event.act && 'github and client_credentials' || 'github and oidc'}}
 
   terraform-dispatch-destroy-0:
     needs: [ reusable-env-vars, terraform-dispatch-auth, terraform-dispatch-auth-decode ]

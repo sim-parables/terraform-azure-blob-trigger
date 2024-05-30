@@ -103,7 +103,7 @@ jobs:
             const GA_OIDC_PROVIDER_TOKEN = process.env['ACTIONS_RUNTIME_TOKEN']
             const GA_OIDC_PROVIDER_URL = process.env['ACTIONS_ID_TOKEN_REQUEST_URL']
             core.setOutput('GA_OIDC_PROVIDER_TOKEN', GA_OIDC_PROVIDER_TOKEN.trim())
-            core.setOutput('GA_OIDC_PROVIDER_URL', GA_OIDC_PROVIDER_URL.trim())
+            core.setOutput('GA_OIDC_PROVIDER_URL', GA_OIDC_PROVIDER_URL.trim() + '&audience=api://AzureADTokenExchange')
       
       - id: jwt_token
         run: |
@@ -116,7 +116,7 @@ jobs:
               fi
           }
           jwtd $IDTOKEN
-          echo "OIDC_TOKEN=$(${IDTOKEN} | base64 -w0 | base64 -w0)" >> $GITHUB_OUTPUT
+          echo "OIDC_TOKEN=$(echo ${IDTOKEN} | base64 -w0 | base64 -w0)" >> $GITHUB_OUTPUT
 
   
   terraform-test:
