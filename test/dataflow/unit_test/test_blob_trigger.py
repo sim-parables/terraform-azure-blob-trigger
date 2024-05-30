@@ -42,25 +42,11 @@ OUTPUT_BUCKET=os.getenv('OUTPUT_BUCKET_NAME')
 assert not INPUT_BUCKET is None
 assert not OUTPUT_BUCKET is None
 
-def request_oidc_token():
-    GA_OIDC_PROVIDER_TOKEN=os.getenv('GA_OIDC_PROVIDER_TOKEN')
-    GA_OIDC_PROVIDER_URL=os.getenv('GA_OIDC_PROVIDER_URL')
-    assert not GA_OIDC_PROVIDER_TOKEN is None
-    assert not GA_OIDC_PROVIDER_URL is None
+def client_assertion():
+    OIDC_TOKEN=os.getenv('OIDC_TOKEN')
+    assert not OIDC_TOKEN is None
 
-    response = requests.post(f'{GA_OIDC_PROVIDER_URL}&audience=api://AzureADTokenExchange',
-        headers = {
-            'Authorization': f'bearer {GA_OIDC_PROVIDER_TOKEN}',
-            'Accept': 'application/json; api-version=2.0',
-            'Content-Type': 'application/json'
-        }
-    )
-    
-    print(response.raw)
-    try:
-        return json.loads(base64.b64decode(response.raw))
-    except Exception as exc:
-        raise Exception('Request OIDC Token Failure', exc)
+    return OIDC_TOKEN
 
 def exchange_oidc_token():
     AZURE_CLIENT_ID=os.getenv('AZURE_CLIENT_ID')
@@ -71,7 +57,7 @@ def exchange_oidc_token():
     return ClientAssertionCredential(
         client_id=AZURE_CLIENT_ID,
         tenant_id=AZURE_TENANT_ID,
-        func=request_oidc_token,
+        func=client_assertion,
    )
 
 
