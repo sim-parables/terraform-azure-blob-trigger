@@ -54,7 +54,9 @@ jobs:
     
     outputs:
       INPUT_BUCKET_NAME: "${{ steps.tf-raw.outputs.INPUT_BUCKET_NAME }}"
+      INPUT_BUCKET_KEY: "${{ steps.tf-raw.outputs.INPUT_BUCKET_KEY }}"
       OUTPUT_BUCKET_NAME: "${{ steps.tf-raw.outputs.OUTPUT_BUCKET_NAME }}"
+      OUTPUT_BUCKET_KEY: "${{ steps.tf-raw.outputs.OUTPUT_BUCKET_KEY }}"
       FUNCTION_URL: "${{ steps.tf-raw.outputs.FUNCTION_URL }}"
 
     steps:
@@ -75,8 +77,12 @@ jobs:
     - name: terraform raw output
       id: tf-raw
       run: |
+        echo "::add-mask::$(terraform output -raw trigger_bucket_key)"
+        echo "::add-mask::$(terraform output -raw results_bucket_key)"
         echo "INPUT_BUCKET_NAME=$(terraform output -raw trigger_bucket_name)
+        INPUT_BUCKET_KEY=$(terraform output -raw trigger_bucket_key)
         OUTPUT_BUCKET_NAME=$(terraform output -raw results_bucket_name)
+        OUTPUT_BUCKET_KEY=$(terraform output -raw results_bucket_key)
         FUNCTION_URL=$(terraform output -raw function_url)" >> $GITHUB_OUTPUT
   
   oidc_output:
@@ -122,7 +128,9 @@ jobs:
       AZURE_CLIENT_SECRET: "${{ secrets.AZURE_CLIENT_SECRET }}"
       AZURE_TENANT_ID: "${{ secrets.AZURE_TENANT_ID }}"
       INPUT_BUCKET_NAME: ${{ needs.terraform-output.outputs.INPUT_BUCKET_NAME }}
+      INPUT_BUCKET_KEY: ${{ needs.terraform-output.outputs.INPUT_BUCKET_KEY }}
       OUTPUT_BUCKET_NAME: ${{ needs.terraform-output.outputs.OUTPUT_BUCKET_NAME }}
+      OUTPUT_BUCKET_KEY: ${{ needs.terraform-output.outputs.OUTPUT_BUCKET_KEY }}
       OIDC_TOKEN: "${{ needs.oidc_output.outputs.OIDC_TOKEN }}"
     
     defaults:

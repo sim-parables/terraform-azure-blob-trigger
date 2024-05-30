@@ -88,7 +88,7 @@ def test_azure_credentials_blob_trigger(payload={'test_value': str(uuid.uuid4())
     )
     _write_blob(fs_input, payload)
 
-    time.sleep(10)
+    time.sleep(120)
     fs_output = adlfs.AzureBlobFileSystem(
         account_name=OUTPUT_BUCKET,
         client_id=AZURE_CLIENT_ID,
@@ -116,6 +116,32 @@ def test_azure_oidc_blob_trigger(payload={'test_value': str(uuid.uuid4())}):
     fs_output = adlfs.AzureBlobFileSystem(
         account_name=OUTPUT_BUCKET,
         credential=creds
+    )
+    rs = _read_blob(fs_output)
+
+    assert rs['test_value'] == payload['test_value']
+
+@pytest.mark.github
+@pytest.mark.shared_key
+def test_azure_shared_key_blob_trigger(payload={'test_value': str(uuid.uuid4())}):
+    INPUT_BUCKET_KEY=os.getenv('INPUT_BUCKET_KEY')
+    OUTPUT_BUCKET_KEY=os.getenv('OUTPUT_BUCKET_KEY')
+    assert not INPUT_BUCKET_KEY is None
+    assert not OUTPUT_BUCKET_KEY is None
+    logging.info('Pytest | Test Azure Blob Trigger')
+    creds = exchange_oidc_token()
+
+    fs_input = adlfs.AzureBlobFileSystem(
+        account_name=INPUT_BUCKET,
+        account_key=INPUT_BUCKET_KEY
+    )
+    _write_blob(fs_input, payload)
+
+    time.sleep(120)
+    
+    fs_output = adlfs.AzureBlobFileSystem(
+        account_name=OUTPUT_BUCKET,
+        account_key=OUTPUT_BUCKET_KEY
     )
     rs = _read_blob(fs_output)
 
