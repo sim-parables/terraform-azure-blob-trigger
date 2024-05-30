@@ -103,7 +103,7 @@ jobs:
             const GA_OIDC_PROVIDER_TOKEN = process.env['ACTIONS_RUNTIME_TOKEN']
             const GA_OIDC_PROVIDER_URL = process.env['ACTIONS_ID_TOKEN_REQUEST_URL']
             core.setOutput('GA_OIDC_PROVIDER_TOKEN', GA_OIDC_PROVIDER_TOKEN.trim())
-            core.setOutput('GA_OIDC_PROVIDER_URL', GA_OIDC_PROVIDER_URL.trim() + '&audience=api://AzureADTokenExchange')
+            core.setOutput('GA_OIDC_PROVIDER_URL', GA_OIDC_PROVIDER_URL.trim())
       
       - id: jwt_token
         run: |
