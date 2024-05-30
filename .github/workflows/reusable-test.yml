@@ -100,14 +100,16 @@ jobs:
         with:
           debug: true
           script: |
-            const GA_OIDC_PROVIDER_TOKEN = process.env['ACTIONS_RUNTIME_TOKEN']
-            const GA_OIDC_PROVIDER_URL = process.env['ACTIONS_ID_TOKEN_REQUEST_URL']
-            core.setOutput('GA_OIDC_PROVIDER_TOKEN', GA_OIDC_PROVIDER_TOKEN.trim())
-            core.setOutput('GA_OIDC_PROVIDER_URL', GA_OIDC_PROVIDER_URL.trim())
+            const token = process.env['ACTIONS_ID_TOKEN_REQUEST_TOKEN']
+            const runtimeUrl = process.env['ACTIONS_ID_TOKEN_REQUEST_URL']
+            core.setOutput('TOKEN', token.trim())
+            core.setOutput('IDTOKENURL', runtimeUrl.trim())  
+
+            const idtoken = await core.getIDToken('api://AzureADTokenExchange')
+            core.setOutput('IDTOKEN', idtoken)
       
       - id: jwt_token
         run: |
-          IDTOKEN=$(curl -H "Authorization: bearer  ${{steps.script.outputs.GA_OIDC_PROVIDER_TOKEN}}" ${{steps.script.outputs.GA_OIDC_PROVIDER_URL}}  -H "Accept: application/json; api-version=2.0" -H "Content-Type: application/json" -d "{}" | jq -r '.value')
           echo $IDTOKEN
           jwtd() {
               if [[ -x $(command -v jq) ]]; then
@@ -115,8 +117,8 @@ jobs:
                   echo "Signature: $(echo "${1}" | awk -F'.' '{print $3}')"
               fi
           }
-          jwtd $IDTOKEN
-          echo "OIDC_TOKEN=$(echo ${IDTOKEN} | base64 -w0 | base64 -w0)" >> $GITHUB_OUTPUT
+          jwtd "${{ steps.script.outputs.IDTOKEN }}"
+          echo "OIDC_TOKEN=$(echo ${{ steps.script.outputs.IDTOKEN }} | base64 -w0 | base64 -w0)" >> $GITHUB_OUTPUT
 
   
   terraform-test:
