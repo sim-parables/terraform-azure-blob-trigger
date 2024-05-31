@@ -10,6 +10,12 @@ meticulous testing, developers ensure the reliability and accuracy of their
 Azure Blob Trigger implementation, fostering robustness and confidence in their 
 cloud-based applications.
 
+References:
+ - https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-cloud-providers
+ - https://learn.microsoft.com/en-ca/entra/identity-platform/v2-oauth2-client-creds-grant-flow?wt.mc_id=SEC-MVP-5004985#third-case-access-token-request-with-a-federated-credential
+ - https://learn.microsoft.com/en-us/python/api/azure-identity/azure.identity.clientassertioncredential?view=azure-python
+ - https://learn.microsoft.com/en-us/graph/api/application-post-federatedidentitycredentials?view=graph-rest-1.0&tabs=python
+
 Local Testing Steps:
 ```
 terraform init && \
