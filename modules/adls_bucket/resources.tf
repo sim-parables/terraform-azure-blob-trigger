@@ -25,7 +25,7 @@ terraform {
 resource "azurerm_storage_account" "this" {
   provider = azurerm.auth_session
 
-  name                     = var.bucket_name
+  name                     = substr(var.bucket_name, 0, 24)
   resource_group_name      = var.resource_group_name
   location                 = var.resource_group_location
   account_tier             = "Standard"
