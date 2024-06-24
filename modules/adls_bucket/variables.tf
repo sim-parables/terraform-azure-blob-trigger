@@ -38,3 +38,9 @@ variable "role_definition_name" {
   description = "Azure AD role definition to allow authentication for ADLS bucket"
   default     = "Storage Blob Data Contributor"
 }
+
+variable "hierarchical_namespace" {
+  type        = bool
+  description = "Flag to enable Azure Storage Account Hierarchical Namespace"
+  default     = false
+}

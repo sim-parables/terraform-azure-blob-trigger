@@ -21,6 +21,7 @@ terraform {
 ## - `location`: Azure Resource Group location.
 ## - `account_tier`: ADLS account tier.
 ## - `account_replication_type`: ADLS replication type.
+## - `is_hns_enabled`: Flag to enable hierarchical namespace feature.
 ## ---------------------------------------------------------------------------------------------------------------------
 resource "azurerm_storage_account" "this" {
   provider = azurerm.auth_session
@@ -30,6 +31,7 @@ resource "azurerm_storage_account" "this" {
   location                 = var.resource_group_location
   account_tier             = "Standard"
   account_replication_type = "LRS"
+  is_hns_enabled           = var.hierarchical_namespace
 }
 
 
